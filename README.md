@@ -1,7 +1,38 @@
-[![Build Status](https://travis-ci.org/DATA-DOG/go-sqlmock.svg)](https://travis-ci.org/DATA-DOG/go-sqlmock)
-[![GoDoc](https://godoc.org/github.com/DATA-DOG/go-sqlmock?status.svg)](https://godoc.org/github.com/DATA-DOG/go-sqlmock)
-[![Go Report Card](https://goreportcard.com/badge/github.com/DATA-DOG/go-sqlmock)](https://goreportcard.com/report/github.com/DATA-DOG/go-sqlmock)
-[![codecov.io](https://codecov.io/github/DATA-DOG/go-sqlmock/branch/master/graph/badge.svg)](https://codecov.io/github/DATA-DOG/go-sqlmock)
+# go-sqlmock (Allowed Online fork)
+
+> **This is a maintained fork of [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock).**
+>
+> The upstream repository has been inactive since September 2024, with the original maintainer
+> [seeking new ownership](https://github.com/DATA-DOG/go-sqlmock/issues/230). This fork exists to
+> keep the library buildable, accept bug fixes, and provide a reliable import path for projects
+> that depend on `database/sql` mock testing.
+
+### What's different from upstream
+
+- **Module path**: `github.com/Allowed-Online/go-sqlmock` (drop-in replacement — just change the import)
+- **Maintained**: We accept high-quality bug fix PRs and keep it building against current Go versions
+- **No breaking changes**: Same API, same package name (`sqlmock`), same behavior
+
+### Migrating from upstream
+
+```diff
+- import "github.com/DATA-DOG/go-sqlmock"
++ import "github.com/Allowed-Online/go-sqlmock"
+```
+
+```sh
+go get github.com/Allowed-Online/go-sqlmock@latest
+```
+
+### Contributing
+
+Bug fixes and compatibility patches are welcome. Please open an issue before starting large changes.
+
+---
+
+*Original README follows below.*
+
+---
 
 # Sql driver mock for Golang
 
@@ -21,26 +52,21 @@ maintain correct **TDD** workflow.
 interface, you will need to switch it to a pointer struct type. Also, **sqlmock.Rows** were used to implement **driver.Rows**
 interface, which was not required or useful for mocking and was removed. Hope it will not cause issues.
 
-## Looking for maintainers
-
-I do not have much spare time for this library and willing to transfer the repository ownership
-to person or an organization motivated to maintain it. Open up a conversation if you are interested. See #230.
-
 ## Install
 
-    go get github.com/DATA-DOG/go-sqlmock
+    go get github.com/Allowed-Online/go-sqlmock
 
 ## Documentation and Examples
 
-Visit [godoc](http://godoc.org/github.com/DATA-DOG/go-sqlmock) for general examples and public api reference.
+Visit [godoc](http://godoc.org/github.com/Allowed-Online/go-sqlmock) for general examples and public api reference.
 See **.travis.yml** for supported **go** versions.
 Different use case, is to functionally test with a real database - [go-txdb](https://github.com/DATA-DOG/go-txdb)
 all database related actions are isolated within a single transaction so the database can remain in the same state.
 
 See implementation examples:
 
-- [blog API server](https://github.com/DATA-DOG/go-sqlmock/tree/master/examples/blog)
-- [the same orders example](https://github.com/DATA-DOG/go-sqlmock/tree/master/examples/orders)
+- [blog API server](https://github.com/Allowed-Online/go-sqlmock/tree/master/examples/blog)
+- [the same orders example](https://github.com/Allowed-Online/go-sqlmock/tree/master/examples/orders)
 
 ### Something you may want to test, assuming you use the [go-mysql-driver](https://github.com/go-sql-driver/mysql)
 
@@ -100,7 +126,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Allowed-Online/go-sqlmock"
 )
 
 // a successful case
@@ -179,7 +205,7 @@ provide a standard sql parsing matchers, since various drivers may not follow th
 ## Matching arguments like time.Time
 
 There may be arguments which are of `struct` type and cannot be compared easily by value like `time.Time`. In this case
-**sqlmock** provides an [Argument](https://godoc.org/github.com/DATA-DOG/go-sqlmock#Argument) interface which
+**sqlmock** provides an [Argument](https://godoc.org/github.com/Allowed-Online/go-sqlmock#Argument) interface which
 can be used in more sophisticated matching. Here is a simple example of time argument matching:
 
 ``` go
@@ -238,19 +264,19 @@ It only asserts that argument is of `time.Time` type.
   of argument matcher.
 - **2016-02-23** - convert expected arguments to driver.Value as natural
   driver does, the change may affect time.Time comparison and will be
-  stricter. See [issue](https://github.com/DATA-DOG/go-sqlmock/issues/31).
+  stricter. See [issue](https://github.com/Allowed-Online/go-sqlmock/issues/31).
 - **2015-08-27** - **v1** api change, concurrency support, all known issues fixed.
 - **2014-08-16** instead of **panic** during reflect type mismatch when comparing query arguments - now return error
 - **2014-08-14** added **sqlmock.NewErrorResult** which gives an option to return driver.Result with errors for
-interface methods, see [issue](https://github.com/DATA-DOG/go-sqlmock/issues/5)
+interface methods, see [issue](https://github.com/Allowed-Online/go-sqlmock/issues/5)
 - **2014-05-29** allow to match arguments in more sophisticated ways, by providing an **sqlmock.Argument** interface
 - **2014-04-21** introduce **sqlmock.New()** to open a mock database connection for tests. This method
-calls sql.DB.Ping to ensure that connection is open, see [issue](https://github.com/DATA-DOG/go-sqlmock/issues/4).
+calls sql.DB.Ping to ensure that connection is open, see [issue](https://github.com/Allowed-Online/go-sqlmock/issues/4).
 This way on Close it will surely assert if all expectations are met, even if database was not triggered at all.
 The old way is still available, but it is advisable to call db.Ping manually before asserting with db.Close.
 - **2014-02-14** RowsFromCSVString is now a part of Rows interface named as FromCSVString.
 It has changed to allow more ways to construct rows and to easily extend this API in future.
-See [issue 1](https://github.com/DATA-DOG/go-sqlmock/issues/1)
+See [issue 1](https://github.com/Allowed-Online/go-sqlmock/issues/1)
 **RowsFromCSVString** is deprecated and will be removed in future
 
 ## Contributions
