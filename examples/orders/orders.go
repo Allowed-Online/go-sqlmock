@@ -2,26 +2,23 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-
-	"github.com/kisielk/sqlstruct"
 )
 
 const ORDER_PENDING = 0
 const ORDER_CANCELLED = 1
 
 type User struct {
-	Id       int     `sql:"id"`
-	Username string  `sql:"username"`
-	Balance  float64 `sql:"balance"`
+	Id       int
+	Username string
+	Balance  float64
 }
 
 type Order struct {
-	Id          int     `sql:"id"`
-	Value       float64 `sql:"value"`
-	ReservedFee float64 `sql:"reserved_fee"`
-	Status      int     `sql:"status"`
+	Id          int
+	Value       float64
+	ReservedFee float64
+	Status      int
 }
 
 func cancelOrder(id int, db *sql.DB) (err error) {
@@ -32,31 +29,18 @@ func cancelOrder(id int, db *sql.DB) (err error) {
 
 	var order Order
 	var user User
-	sql := fmt.Sprintf(`
-SELECT %s, %s
-FROM orders AS o
-INNER JOIN users AS u ON o.buyer_id = u.id
-WHERE o.id = ?
-FOR UPDATE`,
-		sqlstruct.ColumnsAliased(order, "o"),
-		sqlstruct.ColumnsAliased(user, "u"))
 
-	// fetch order to cancel
-	rows, err := tx.Query(sql, id)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	defer rows.Close()
-	// no rows, nothing to do
-	if !rows.Next() {
-		tx.Rollback()
-		return
-	}
-
-	// read order
-	err = sqlstruct.ScanAliased(&order, rows, "o")
+	// fetch order and buyer in a single row
+	err = tx.QueryRow(`
+		SELECT o.id, o.value, o.reserved_fee, o.status,
+		       u.id, u.username, u.balance
+		FROM orders AS o
+		INNER JOIN users AS u ON o.buyer_id = u.id
+		WHERE o.id = ?
+		FOR UPDATE`, id).Scan(
+		&order.Id, &order.Value, &order.ReservedFee, &order.Status,
+		&user.Id, &user.Username, &user.Balance,
+	)
 	if err != nil {
 		tx.Rollback()
 		return
@@ -68,38 +52,21 @@ FOR UPDATE`,
 		return
 	}
 
-	// read user
-	err = sqlstruct.ScanAliased(&user, rows, "u")
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-	rows.Close() // manually close before other prepared statements
-
 	// refund order value
-	sql = "UPDATE users SET balance = balance + ? WHERE id = ?"
-	refundStmt, err := tx.Prepare(sql)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-	defer refundStmt.Close()
-	_, err = refundStmt.Exec(order.Value+order.ReservedFee, user.Id)
+	_, err = tx.Exec(
+		"UPDATE users SET balance = balance + ? WHERE id = ?",
+		order.Value+order.ReservedFee, user.Id,
+	)
 	if err != nil {
 		tx.Rollback()
 		return
 	}
 
 	// update order status
-	order.Status = ORDER_CANCELLED
-	sql = "UPDATE orders SET status = ?, updated = NOW() WHERE id = ?"
-	orderUpdStmt, err := tx.Prepare(sql)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-	defer orderUpdStmt.Close()
-	_, err = orderUpdStmt.Exec(order.Status, order.Id)
+	_, err = tx.Exec(
+		"UPDATE orders SET status = ?, updated = NOW() WHERE id = ?",
+		ORDER_CANCELLED, order.Id,
+	)
 	if err != nil {
 		tx.Rollback()
 		return
