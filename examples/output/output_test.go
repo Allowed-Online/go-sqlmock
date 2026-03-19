@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Allowed-Online/go-sqlmock"
 )
 
 func TestNamedOutputArgs(t *testing.T) {
