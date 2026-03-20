@@ -1,19 +1,18 @@
+version: "2"
+
 linters:
   enable:
     - govet
     - errcheck
     - staticcheck
-    - gosimple
     - unused
-
-issues:
-  exclude-dirs:
-    - examples
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - staticcheck
-        - gosimple
-        - unused
-        - ineffassign
+  exclusions:
+    paths:
+      - examples
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+          - staticcheck
+          - unused
+          - ineffassign
