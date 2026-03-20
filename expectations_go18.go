@@ -6,6 +6,7 @@ package sqlmock
 import (
 	"database/sql"
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -81,7 +82,7 @@ func (e *queryBasedExpectation) attemptArgMatch(args []driver.NamedValue) (err e
 			case error:
 				err = v
 			case string:
-				err = fmt.Errorf(v)
+				err = errors.New(v)
 			default:
 				err = fmt.Errorf("%v", v)
 			}

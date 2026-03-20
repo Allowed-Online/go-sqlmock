@@ -306,10 +306,9 @@ func (e *ExpectedExec) WillReturnResult(result driver.Result) *ExpectedExec {
 // Returned by *Sqlmock.ExpectPrepare.
 type ExpectedPrepare struct {
 	commonExpectation
-	mock         *sqlmock
-	expectSQL    string
-	statement    driver.Stmt
-	closeErr     error
+	mock      *sqlmock
+	expectSQL string
+	closeErr  error
 	mustBeClosed bool
 	wasClosed    bool
 	delay        time.Duration
