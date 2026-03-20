@@ -13,6 +13,15 @@
 - **Maintained**: We accept high-quality bug fix PRs and keep it building against current Go versions
 - **No breaking changes**: Same API, same package name (`sqlmock`), same behavior
 
+### Fixes included in this fork
+
+We've backported the following fixes from unmerged upstream PRs:
+
+- **Parallel prepared statement reuse** ([upstream #285](https://github.com/DATA-DOG/go-sqlmock/pull/285)) — prevents race conditions when reusing prepared statements across concurrent tests
+- **Output parameter support** ([upstream #209](https://github.com/DATA-DOG/go-sqlmock/pull/209)) — enables mocking stored procedures with output parameters
+- **Type assertion panic fix** ([upstream #297](https://github.com/DATA-DOG/go-sqlmock/pull/297)) — recovers from unchecked type assertions during error handling
+- **Go 1.22+ deadlock fix** — resolves an ordering issue that caused example tests to deadlock on newer Go versions
+
 ### Migrating from upstream
 
 ```diff
